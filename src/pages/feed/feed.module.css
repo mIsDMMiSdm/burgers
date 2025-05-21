@@ -1,0 +1,18 @@
+.container {
+  box-sizing: border-box;
+  max-width: 1240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 40px;
+}
+
+.feed {
+  display: grid;
+  justify-content: center;
+  gap: 60px;
+  grid-template-columns: repeat(2, 1fr);
+  max-height: calc(100vh - 88px - 40px - 30px - 30px);
+  height: 100%;
+}

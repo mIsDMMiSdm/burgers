@@ -1,0 +1,26 @@
+.container {
+  box-sizing: border-box;
+  max-width: 1240px;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: minmax(320px, 1fr) 4fr;
+  gap: 60px;
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  padding-top: 120px;
+}
+
+.section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100%;
+  box-sizing: border-box;
+  padding-top: 40px;
+  max-height: calc(100vh - 88px);
+}

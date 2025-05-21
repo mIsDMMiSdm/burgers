@@ -1,0 +1,10 @@
+.order_modal {
+  align-items: center;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+}
+
+.order_modal_text_case_lower {
+  text-transform: lowercase;
+}

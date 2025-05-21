@@ -1,0 +1,91 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-width: 640px;
+  justify-content: center;
+}
+
+.numbers {
+  align-self: center;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.status {
+  color: var(--text-primary-color);
+}
+
+.status_done {
+  color: var(--colors-interface-success);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.ingredients_list {
+  display: flex;
+  flex-direction: column;
+  max-height: 312px;
+  overflow-y: auto;
+  gap: 16px;
+  padding-right: 24px;
+}
+
+.ingredients_list::-webkit-scrollbar {
+  width: 8px;
+  margin-top: 40px;
+}
+
+.ingredients_list::-webkit-scrollbar-track {
+  background: #2f2f37;
+}
+
+.ingredients_list::-webkit-scrollbar-thumb {
+  background-color: #8585ad;
+}
+
+.ingredients_item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 64px minmax(320px, 1fr) minmax(100px, 416px);
+  gap: 16px;
+  align-items: center;
+}
+
+.ingredients_image {
+  width: 64px;
+  height: 64px;
+  background: #131316;
+  border: 2px solid #801AB2;
+  border-radius: 100%;
+  object-fit: cover;
+  box-sizing: border-box;
+}
+
+.ingredients_title {
+  width: 100%;
+}
+
+.ingredients_price {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.price {
+  display: flex;
+  gap: 8px;
+  align-self: center;
+}

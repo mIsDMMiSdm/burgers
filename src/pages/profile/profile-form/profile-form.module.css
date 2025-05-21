@@ -1,0 +1,48 @@
+.form {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 480px;
+  padding-top: 80px;
+  position: relative;
+}
+
+.button_container {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.button {
+  box-sizing: border-box;
+  max-height: 56px;
+  max-width: 167px;
+  padding: 16px 40px;
+}
+
+.button_secondary {
+  box-sizing: border-box;
+  max-height: 56px;
+  max-width: 74px;
+  padding: 16px 8px;
+}
+
+.errorMessage {
+  bottom: -50px;
+  color: red;
+  left: 0;
+  position: absolute;
+  right: 0;
+  text-align: center;
+}
+
+.loader_wrapper {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 240px;
+  width: 100%;
+}

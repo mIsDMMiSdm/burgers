@@ -1,0 +1,65 @@
+.iconDone {
+  display: grid;
+  height: 120px;
+  transition: scale 1.2s ease;
+  width: 120px;
+}
+
+.iconDone:hover {
+  scale: 1.07;
+}
+
+.iconDone__layer {
+  background-position: center;
+  background-repeat: no-repeat;
+  grid-area: 1 / 1 / 1 / 1;
+  place-self: center;
+}
+
+.icon {
+  background-image: url('../../images/check.svg');
+  fill: #f2f2f3;
+  height: 48px;
+  width: 48px;
+}
+
+.shape_size_s {
+  animation: rotateShape 10s linear forwards infinite;
+  background-image: url('../../images/shape-01.svg');
+  height: 65px;
+  width: 68px;
+}
+
+.shape_size_l {
+  animation: rotateShape 15s linear reverse forwards infinite,
+  scaleShape 5s ease forwards alternate infinite;
+  background-image: url('../../images/shape-03.svg');
+  height: 102px;
+  width: 98px;
+}
+
+.shape_size_xl {
+  animation: rotateShape 20s linear forwards infinite,
+  scaleShape 3s ease forwards alternate-reverse infinite;
+  background-image: url('../../images/shape-02.svg');
+  height: 100px;
+  width: 107px;
+}
+
+@keyframes rotateShape {
+  from {
+    rotate: 0;
+  }
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes scaleShape {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.2;
+  }
+}

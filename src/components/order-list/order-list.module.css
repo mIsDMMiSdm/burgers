@@ -1,0 +1,30 @@
+.orders {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 0 8px 24px 0;
+  margin: 0;
+  list-style: none;
+}
+
+.orders::-webkit-scrollbar {
+  width: 8px;
+}
+
+.orders::-webkit-scrollbar-track {
+  background: #2f2f37;
+  margin-bottom: 64px;
+}
+
+.orders::-webkit-scrollbar-thumb {
+  background-color: #8585ad;
+}
+
+.subtitle {
+  width: 100%;
+  text-align: center;
+  margin: auto;
+}

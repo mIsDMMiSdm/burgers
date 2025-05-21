@@ -1,0 +1,14 @@
+.main {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: calc(100vh - 88px);
+}
+
+.main_container {
+  display: grid;
+  gap: 40px;
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 1240px;
+}

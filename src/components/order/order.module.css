@@ -1,0 +1,80 @@
+.item {
+  position: relative;
+  padding: 24px;
+  background: var(--background);
+  border-radius: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04), 0 0 2px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.04);
+  color: var(--text-primary-color);
+  border: 2px dashed transparent;
+  cursor: pointer;
+  z-index: 1;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.item:hover {
+  opacity: 0.7;
+}
+
+.item:focus {
+  border: 2px dashed #4C4CFF;
+}
+
+.numbers {
+  display: flex;
+  justify-content: space-between;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.status {
+  color: var(--text-primary-color);
+}
+
+.status_done {
+  color: var(--colors-interface-success);
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ingredients_list {
+  display: flex;
+}
+
+.price {
+  display: flex;
+  gap: 8px;
+  align-self: center;
+}
+
+.image {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  background: #131316;
+  border: 2px solid #801AB2;
+  border-radius: 100%;
+  object-fit: cover;
+  box-sizing: border-box;
+}
+
+.image_last {
+  position: relative;
+  background: #1C1C21;
+  opacity: 0.6;
+}
+
+.remaining_ingredients {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+}

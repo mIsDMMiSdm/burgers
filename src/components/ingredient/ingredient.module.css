@@ -1,0 +1,40 @@
+.ingredients__item {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: space-between;
+  min-height: 208px;
+  position: relative;
+}
+
+.ingredients__item_disabled {
+  filter: grayscale(1);
+  pointer-events: none;
+}
+
+.ingredients__image {
+  display: block;
+  max-height: 120px;
+  max-width: 240px;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
+.ingredients__price {
+  align-items: center;
+  display: flex;
+  font-size: 28px;
+  gap: 9px;
+  line-height: 24px;
+}
+
+.ingredients__name {
+  max-width: 272px;
+  min-height: 48px;
+  overflow: hidden;
+  text-align: center;
+  width: 100%;
+}

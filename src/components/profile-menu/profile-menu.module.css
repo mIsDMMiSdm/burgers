@@ -1,0 +1,35 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  padding-top: 120px;
+}
+
+.item {
+  align-items: center;
+  display: flex;
+  min-height: 64px;
+  width: 100%;
+}
+
+.button {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.link {
+  cursor: pointer;
+  color: #8585ad;
+  transition: color .25s ease, opacity .25s ease;
+}
+
+.link:hover {
+  opacity: .8;
+}
+
+.link_active {
+  transition: color .25s ease;
+  color: #f2f2f3;
+}
+
