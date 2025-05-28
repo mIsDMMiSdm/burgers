@@ -1,27 +1,41 @@
-import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useState, useRef, useEffect, FC } from 'react';
 import { useInView } from 'react-intersection-observer';
 
-import { useAppSelector } from '../../hooks/useRedux';
-import { getIngredients } from '../../services/helpers/getSelector';
-import { TabShape } from '../../types/TabShape';
-import { ingredientTabs } from '../../utils/config';
-import { TABS } from '../../utils/constants';
-import Ingredient from '../ingredient/ingredient';
-import IngredientsContainer from '../ingredients-container/ingredients-container';
-import Tabs from '../tabs/tabs';
-import styles from './burger-ingredients.module.css';
+import { TTabMode, TIngredient } from '@utils-types';
+import { BurgerIngredientsUI } from '../ui/burger-ingredients';
 
-const BurgerIngredients = () => {
-  const [tabs] = useState<TabShape[]>(ingredientTabs);
-  const [currentTab, setCurrentTab] = useState(TABS.BUN);
-  const [isScrollable, setIsScrollable] = useState(true);
+import { useSelector } from '@store';
+import { getIngredientsSelector } from '@slices';
+
+export const BurgerIngredients: FC = () => {
+  const ingredients: TIngredient[] = useSelector(getIngredientsSelector);
+
+  const buns = ingredients.filter((ingredient) => {
+    if (ingredient.type === 'bun') {
+      return ingredient;
+    }
+  });
+  const mains = ingredients.filter((ingredient) => {
+    if (ingredient.type === 'main') {
+      return ingredient;
+    }
+  });
+  const sauces = ingredients.filter((ingredient) => {
+    if (ingredient.type === 'sauce') {
+      return ingredient;
+    }
+  });
+
+  const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
+  const titleBunRef = useRef<HTMLHeadingElement>(null);
+  const titleMainRef = useRef<HTMLHeadingElement>(null);
+  const titleSaucesRef = useRef<HTMLHeadingElement>(null);
 
   const [bunsRef, inViewBuns] = useInView({
     threshold: 0
   });
 
-  const [mainsRef, inViewMain] = useInView({
+  const [mainsRef, inViewFilling] = useInView({
     threshold: 0
   });
 
@@ -30,75 +44,38 @@ const BurgerIngredients = () => {
   });
 
   useEffect(() => {
-    if (isScrollable) {
-      if (inViewBuns) {
-        setCurrentTab(TABS.BUN);
-      } else if (inViewSauces) {
-        setCurrentTab(TABS.SAUCE);
-      } else if (inViewMain) {
-        setCurrentTab(TABS.MAIN);
-      }
+    if (inViewBuns) {
+      setCurrentTab('bun');
+    } else if (inViewSauces) {
+      setCurrentTab('sauce');
+    } else if (inViewFilling) {
+      setCurrentTab('main');
     }
-  }, [inViewBuns, inViewMain, inViewSauces, isScrollable]);
+  }, [inViewBuns, inViewFilling, inViewSauces]);
 
-  const scrollToId = useCallback((tab: string) => {
-    const element = document.getElementById(tab);
-    if (element) {
-      element.scrollIntoView();
-      setCurrentTab(tab);
-    }
-  }, []);
-
-  const handleTabClick = useCallback((value: string) => {
-    setCurrentTab(value);
-    setIsScrollable(false);
-    scrollToId(value);
-    return () => setIsScrollable(true);
-  }, [scrollToId]);
-
-  const { ingredients } = useAppSelector(getIngredients);
-
-  const buns = useMemo(() => ingredients.filter((item) => item.type === 'bun'), [ingredients]);
-  const sauces = useMemo(() => ingredients.filter((item) => item.type === 'sauce'), [ingredients]);
-  const main = useMemo(() => ingredients.filter((item) => item.type === 'main'), [ingredients]);
-
-  const bunElements = useMemo(() => buns.map((item) => <Ingredient ingredient={item} key={item._id}/>), [buns]);
-  const sauceElements = useMemo(() => sauces.map((item) => <Ingredient ingredient={item} key={item._id}/>), [sauces]);
-  const mainElements = useMemo(() => main.map((item) => <Ingredient ingredient={item} key={item._id}/>), [main]);
+  const onTabClick = (tab: string) => {
+    setCurrentTab(tab as TTabMode);
+    if (tab === 'bun')
+      titleBunRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (tab === 'main')
+      titleMainRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (tab === 'sauce')
+      titleSaucesRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <section className={clsx(styles.section, 'mt-10')}>
-      <h1
-        className={clsx('text', 'text_type_main-large')}
-      >
-        Соберите бургер
-      </h1>
-      <Tabs
-        changeTab={handleTabClick}
-        currentTab={currentTab}
-        tabs={tabs}
-      />
-      <ul
-        className={clsx(styles.ingredients)}
-      >
-        <li>
-          <IngredientsContainer ref={bunsRef} title={'Булки'} type={TABS.BUN}>
-            {bunElements}
-          </IngredientsContainer>
-        </li>
-        <li>
-          <IngredientsContainer ref={saucesRef} title={'Соусы'} type={TABS.SAUCE}>
-            {sauceElements}
-          </IngredientsContainer>
-        </li>
-        <li>
-          <IngredientsContainer ref={mainsRef} title={'Начинка'} type={TABS.MAIN}>
-            {mainElements}
-          </IngredientsContainer>
-        </li>
-      </ul>
-    </section>
+    <BurgerIngredientsUI
+      currentTab={currentTab}
+      buns={buns}
+      mains={mains}
+      sauces={sauces}
+      titleBunRef={titleBunRef}
+      titleMainRef={titleMainRef}
+      titleSaucesRef={titleSaucesRef}
+      bunsRef={bunsRef}
+      mainsRef={mainsRef}
+      saucesRef={saucesRef}
+      onTabClick={onTabClick}
+    />
   );
 };
-
-export default BurgerIngredients;

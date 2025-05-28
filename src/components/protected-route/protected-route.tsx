@@ -1,40 +1,25 @@
-import { JSX, ReactNode } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { useSelector } from '@store';
+import { isAuthorizedSelector } from '@slices';
 
-import { useAppSelector } from '../../hooks/useRedux';
-import { getUser } from '../../services/helpers/getSelector';
-import { PATH } from '../../utils/config';
-
-type Props = {
-  anonymous?: boolean;
-  children?: ReactNode;
-}
-
-const ProtectedRoute = ({
-  anonymous = false,
-  children,
-}: Props): JSX.Element => {
-  const { user } = useAppSelector(getUser);
-  const location = useLocation();
-  const from = location?.state?.from || PATH.HOME;
-
-  if (anonymous && user.isLogin) {
-    return <Navigate replace={true} to={from} />;
-  }
-
-  if (!anonymous && !user.isLogin && user.isLogout) {
-    return <Navigate to={PATH.HOME} />;
-  }
-
-  if (!anonymous && !user.isLogin) {
-    return <Navigate replace={true} state={{ from: location }} to={PATH.LOGIN} />;
-  }
-
-  return (
-    <>
-      {children}
-    </>
-  );
+type ProtectedRouteProps = {
+  forAuthorized: boolean;
 };
 
-export default ProtectedRoute;
+export const ProtectedRoute = ({
+  forAuthorized = false
+}: ProtectedRouteProps) => {
+  const location = useLocation();
+  const isAuthorized = useSelector(isAuthorizedSelector);
+  const from = location.state?.from || '/';
+
+  if (!forAuthorized && isAuthorized) {
+    return <Navigate to={from} />;
+  }
+
+  if (forAuthorized && !isAuthorized) {
+    return <Navigate to='/login' state={{ from: location }} />;
+  }
+
+  return <Outlet />;
+};

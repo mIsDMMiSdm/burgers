@@ -1,108 +1,40 @@
-import { Button, Input } from '@ya.praktikum/react-developer-burger-ui-components';
-import clsx from 'clsx';
-import { FormEvent, useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { RegisterUI } from '@ui-pages';
+import { useDispatch, useSelector } from '@store';
+import {
+  clearUserError,
+  registerUserThunk,
+  getUserErrorSelector
+} from '@slices';
+import { error } from 'console';
 
-import { useForm } from '../../hooks/useForm';
-import { useAppDispatch, useAppSelector } from '../../hooks/useRedux';
-import { fetchRegister } from '../../services/asyncThunk/registerThunk';
-import { getRegister } from '../../services/helpers/getSelector';
-import { PATH } from '../../utils/config';
-import styles from './register.module.css';
+export const Register: FC = () => {
+  const dispatch = useDispatch();
+  const error = useSelector(getUserErrorSelector);
+  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-const RegisterPage = () => {
-  const { errors, handleChange, isValid, resetForm, values } = useForm();
-  const dispatch = useAppDispatch();
-  const [isVisiblePassword, setIsVisiblePassword] = useState(false);
-  const { errorMessage, errorMessageContent, fetch } = useAppSelector(getRegister);
-
-  useEffect(() => {
-    resetForm();
-  }, [resetForm]);
-
-  const onIconClick = () => setIsVisiblePassword(!isVisiblePassword);
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    if (values.email && values.password && values.name) {
-      dispatch(fetchRegister({
-        email: values.email,
-        name: values.name,
-        password: values.password,
-      }));
-    }
+    const name = userName;
+    dispatch(registerUserThunk({ email, name, password }));
   };
 
+  useEffect(() => {
+    dispatch(clearUserError());
+  });
+
   return (
-    <section className={clsx(styles.container)}>
-      <form className={clsx(styles.login_form)} onSubmit={handleSubmit}>
-        <h1 className={clsx('text', 'text_type_main-medium')}>Регистрация</h1>
-        <Input
-          error={!!errors.name}
-          errorText={errors.name}
-          extraClass={clsx(styles.input_error)}
-          maxLength={20}
-          minLength={2}
-          name={'name'}
-          onChange={handleChange}
-          placeholder={'Имя'}
-          required
-          size={'default'}
-          type={'text'}
-          value={values.name || ''}
-        />
-        <Input
-          error={!!errors.email}
-          errorText={errors.email}
-          extraClass={clsx(styles.input_error)}
-          name={'email'}
-          onChange={handleChange}
-          placeholder={'E-mail'}
-          required
-          size={'default'}
-          type={'email'}
-          value={values.email || ''}
-        />
-        <Input
-          error={!!errors.password}
-          errorText={errors.password}
-          extraClass={clsx(styles.input_error)}
-          icon={isVisiblePassword ? 'HideIcon' : 'ShowIcon'}
-          maxLength={20}
-          minLength={8}
-          name={'password'}
-          onChange={handleChange}
-          onIconClick={onIconClick}
-          placeholder={'Пароль'}
-          required
-          size={'default'}
-          type={isVisiblePassword ? 'text' : 'password'}
-          value={values.password || ''}
-        />
-        <Button
-          disabled={!isValid || fetch}
-          htmlType="submit"
-          size="medium"
-          type="primary"
-        >
-          Зарегистрироваться
-        </Button>
-      </form>
-      <ul className={clsx('page__list', styles.list)}>
-        {
-          errorMessage && (
-            <li className={clsx('text', 'text_type_main-small', styles.item)}>
-              <span className={clsx(styles.plain_text, styles.error_text)}>{errorMessageContent}</span>
-            </li>
-          )
-        }
-        <li className={clsx('text', 'text_type_main-small', styles.item)}>
-          <span className={clsx(styles.plain_text)}>Уже зарегистрированы?</span>
-          <NavLink className={clsx(styles.app_link)} to={PATH.LOGIN}>Войти</NavLink>
-        </li>
-      </ul>
-    </section>
+    <RegisterUI
+      errorText={error?.toString()}
+      email={email}
+      userName={userName}
+      password={password}
+      setEmail={setEmail}
+      setPassword={setPassword}
+      setUserName={setUserName}
+      handleSubmit={handleSubmit}
+    />
   );
 };
-
-export default RegisterPage;

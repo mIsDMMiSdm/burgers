@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/stellar-burgers/static/css/main.1a041a86.css",
+    "main.js": "/stellar-burgers/static/js/main.bd42d774.js",
+    "static/media/JetBrainsMono-Bold.woff": "/stellar-burgers/static/media/JetBrainsMono-Bold.710fc064391a5c6664a3.woff",
+    "static/media/JetBrainsMono-Regular.woff": "/stellar-burgers/static/media/JetBrainsMono-Regular.cf0aa0c380a3fa8ae731.woff",
+    "static/media/JetBrainsMono-Bold.woff2": "/stellar-burgers/static/media/JetBrainsMono-Bold.c232d532ea5a5189a278.woff2",
+    "static/media/JetBrainsMono-Regular.woff2": "/stellar-burgers/static/media/JetBrainsMono-Regular.b60380891bcf2eb241ca.woff2",
+    "static/media/iceland.woff": "/stellar-burgers/static/media/iceland.77ad7fc2baffd9305538.woff",
+    "static/media/Iceland-Regular.woff": "/stellar-burgers/static/media/Iceland-Regular.3580a0ae44cd63d608dc.woff",
+    "static/media/iceland.woff2": "/stellar-burgers/static/media/iceland.4ae67a017a5ff82bbbb7.woff2",
+    "static/media/shape-01.svg": "/stellar-burgers/static/media/shape-01.fae5d5ea78959f1e1a23.svg",
+    "static/media/shape-02.svg": "/stellar-burgers/static/media/shape-02.d268a858f18692892cfc.svg",
+    "static/media/shape-03.svg": "/stellar-burgers/static/media/shape-03.3f406a7c8ca3067198ce.svg",
+    "index.html": "/stellar-burgers/index.html",
+    "static/media/check.svg": "/stellar-burgers/static/media/check.e64a9d0bd726807d11de.svg",
+    "main.1a041a86.css.map": "/stellar-burgers/static/css/main.1a041a86.css.map",
+    "main.bd42d774.js.map": "/stellar-burgers/static/js/main.bd42d774.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1a041a86.css",
+    "static/js/main.bd42d774.js"
+  ]
+}
