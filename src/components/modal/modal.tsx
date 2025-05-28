@@ -1,72 +1,37 @@
-import { CloseIcon } from '@ya.praktikum/react-developer-burger-ui-components';
-import clsx from 'clsx';
-import { ReactNode } from 'react';
-import { createPortal } from 'react-dom';
+import { FC, memo, useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 
-import { MODAL_ID } from '../../utils/constants';
-import ModalOverlay from '../modal-overlay/modal-overlay';
-import styles from './modal.module.css';
+import { TModalProps } from './type';
+import { ModalUI } from '@ui';
+import { useLocation } from 'react-router-dom';
 
-type Props = {
-  ariaTitle: string;
-  children?: ReactNode;
-  handleModalClose: () => void;
-  isModalOpen: boolean;
-  title: string;
-}
+const modalRoot = document.getElementById('modals');
 
-const Modal = ({ ariaTitle, children, handleModalClose, isModalOpen, title }: Props) => {
+export const Modal: FC<TModalProps> = memo(({ title, onClose, children }) => {
+  const location = useLocation();
+  const [titleStyle, setTitleStyle] = useState('text_type_main-large');
 
-  return createPortal(
-    <>
-      {
-        <>
-          <ModalOverlay handleModalClose={handleModalClose}/>
-          <div
-            className={clsx(
-              styles.modal,
-              { [styles.modal_opened]: isModalOpen },
-            )}
-            aria-labelledby={title ? 'modal-title' : 'aria-title'}
-            aria-modal={isModalOpen ? 'true' : 'false'}
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-          >
-            <div className={clsx(styles.modal__header)}>
-              {
-                title &&
-                <h3
-                  className={clsx(
-                    styles.modal__title,
-                    'text',
-                    'text_type_main-large'
-                  )}
-                  id="modal-title">
-                  {title}
-                </h3>
-              }
-              {
-                !title &&
-                <h3 className={clsx(styles.screenReader)} id="aria-title">
-                  {ariaTitle}
-                </h3>
-              }
-              <button
-                aria-label="Закрыть модальное окно"
-                className={clsx(styles.modal__close)}
-                onClick={handleModalClose}
-                type="button"
-              >
-                <CloseIcon type="primary"/>
-              </button>
-            </div>
-            {children}
-          </div>
-        </>
-      }
-    </>,
-    document.querySelector(MODAL_ID) as HTMLDivElement
+  useEffect(() => {
+    if (/feed|profile/i.test(location.pathname)) {
+      setTitleStyle('text_type_digits-default');
+    }
+  });
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      e.key === 'Escape' && onClose();
+    };
+
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [onClose]);
+
+  return ReactDOM.createPortal(
+    <ModalUI title={title} onClose={onClose} titleStyle={titleStyle}>
+      {children}
+    </ModalUI>,
+    modalRoot as HTMLDivElement
   );
-};
-
-export default Modal;
+});

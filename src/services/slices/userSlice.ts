@@ -1,172 +1,187 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-
-import { State } from '../../types/State';
-import { Token } from '../../types/Token';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
-  ACCESS_TOKEN,
-  ERROR_DEFAULT, ERROR_USER_EXISTS, EXPIRES_AT, NOTIFICATION_LOGIN_SUCCESS,
-  NOTIFICATION_USER_UPDATE_ERROR,
-  NOTIFICATION_USER_UPDATE_SUCCESS, REFRESH_TOKEN
-} from '../../utils/constants';
-import { fetchGetUser } from '../asyncThunk/getUserThunk';
-import { fetchUpdateUser } from '../asyncThunk/updateUserThunk';
-import { getCookie } from '../helpers/getCookie';
+  registerUserApi,
+  loginUserApi,
+  getUserApi,
+  updateUserApi,
+  logoutApi,
+  refreshToken,
+  forgotPasswordApi,
+  resetPasswordApi
+} from '@api';
+import type { TRegisterData, TLoginData } from '@api';
+import { TUser } from '@utils-types';
+import { deleteCookie, setCookie } from '../../utils/cookie';
 
-export type UserState = {
-  getUserRequest: State;
-  patchUserRequest: State;
-  user: {
-    email: string;
-    isLogin: boolean;
-    isLogout: boolean;
-    name: string;
-    token: Token;
-  }
+export interface UserState {
+  isLoadong: boolean;
+  user: TUser | null;
+  isAuthorized: boolean;
+  error: string | null;
 }
 
 const initialState: UserState = {
-  getUserRequest: {
-    error: false,
-    errorMessage: false,
-    errorMessageContent: ERROR_DEFAULT,
-    fetch: false,
-    message: false,
-    messageContent: NOTIFICATION_LOGIN_SUCCESS
-  },
-  patchUserRequest: {
-    error: false,
-    errorMessage: false,
-    errorMessageContent: NOTIFICATION_USER_UPDATE_ERROR,
-    fetch: false,
-    message: false,
-    messageContent: NOTIFICATION_USER_UPDATE_SUCCESS
-  },
-  user: {
-    email: '',
-    isLogin: !!getCookie(ACCESS_TOKEN) || false,
-    isLogout: false,
-    name: '',
-    token: {
-      accessToken: getCookie(ACCESS_TOKEN) ?? null,
-      expiresAt: getCookie(EXPIRES_AT) ?? null,
-      refreshToken: getCookie(REFRESH_TOKEN) ?? null
-    }
-  }
+  isLoadong: false,
+  user: null,
+  isAuthorized: false,
+  error: null
 };
 
-const userSlice = createSlice({
-  extraReducers: (builder) => {
-    builder
-      // Get user
-      .addCase(fetchGetUser.pending, (state) => {
-        state.getUserRequest = {
-          ...initialState.getUserRequest,
-          fetch: true
-        };
-      })
-      .addCase(fetchGetUser.fulfilled, (state, action) => {
-        const { user } = action.payload;
-        const { email, name } = user;
+export const loginUserThunk = createAsyncThunk(
+  'user/login',
+  (loginData: TLoginData) => loginUserApi(loginData)
+);
 
-        state.getUserRequest = {
-          ...state.getUserRequest,
-          fetch: false,
-        };
+export const registerUserThunk = createAsyncThunk(
+  'user/register',
+  (registerData: TRegisterData) => registerUserApi(registerData)
+);
 
-        state.user = {
-          ...state.user,
-          email,
-          isLogin: true,
-          name
-        };
-      })
-      .addCase(fetchGetUser.rejected, (state, action) => {
-        if (action.payload && 'message' in action.payload) {
-          const { message } = action.payload;
-          state.getUserRequest = {
-            ...state.getUserRequest,
-            error: true,
-            errorMessageContent: message || ERROR_DEFAULT,
-            fetch: false
-          };
-          state.user = {
-            ...state.user,
-            isLogin: false
-          };
-        } else {
-          console.error('action.payload is undefined');
-        }
-      })
-      // Update user
-      .addCase(fetchUpdateUser.pending, (state) => {
-        state.patchUserRequest = {
-          ...initialState.patchUserRequest,
-          fetch: true
-        };
-      })
-      .addCase(fetchUpdateUser.fulfilled, (state, action) => {
-        const { user } = action.payload;
-        const { email, name } = user;
+export const logoutUserThunk = createAsyncThunk('user/logout', logoutApi);
 
-        state.patchUserRequest = {
-          ...state.patchUserRequest,
-          fetch: false,
-          message: true
-        };
+export const updateUserThunk = createAsyncThunk(
+  'user/update',
+  (user: Partial<TRegisterData>) => updateUserApi(user)
+);
 
-        state.user = {
-          ...state.user,
-          email,
-          isLogin: true,
-          name
-        };
-      })
-      .addCase(fetchUpdateUser.rejected, (state, action) => {
-        if (action.payload && 'message' in action.payload) {
-          const { message } = action.payload;
-          state.patchUserRequest = {
-            ...state.patchUserRequest,
-            error: true,
-            errorMessage: true,
-            fetch: false
-          };
-          (message && message === 'User with such email already exists')
-            ? state.patchUserRequest.errorMessageContent = ERROR_USER_EXISTS
-            : state.patchUserRequest.errorMessageContent = message || NOTIFICATION_USER_UPDATE_ERROR;
-        } else {
-          console.error('action.payload is undefined');
-        }
-      });
-  },
-  initialState,
+export const forgotPasswordThunk = createAsyncThunk(
+  'user/frogotPassword',
+  (data: { email: string }) => forgotPasswordApi(data)
+);
+
+export const resetPasswordThunk = createAsyncThunk(
+  'user/resetPassword',
+  (data: { password: string; token: string }) => resetPasswordApi(data)
+);
+
+export const getUserThunk = createAsyncThunk('user/get', getUserApi);
+
+export const userSlice = createSlice({
   name: 'user',
+  initialState,
   reducers: {
-    setError(
-      state,
-      action: PayloadAction<boolean>
-    ) {
-      state.patchUserRequest = {
-        ...state.patchUserRequest,
-        errorMessage: action.payload
-      };
-    },
-    updateUser(
-      state,
-      action: PayloadAction<{
-        email?: string;
-        isLogin?: boolean;
-        isLogout?: boolean;
-        name?: string;
-        token?: Token;
-      }>
-    ) {
-      state.user = {
-        ...state.user,
-        ...action.payload
-      };
+    clearUserError: (state) => {
+      state.error = null;
     }
   },
+  selectors: {
+    getUserStateSelector: (state) => state,
+    getUserSelector: (state) => state.user,
+    isAuthorizedSelector: (state) => state.isAuthorized,
+    getUserErrorSelector: (state) => state.error
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginUserThunk.pending, (state) => {
+        state.isLoadong = true;
+        state.error = null;
+      })
+      .addCase(loginUserThunk.rejected, (state, { error }) => {
+        state.isLoadong = false;
+        state.error = error.message as string;
+      })
+      .addCase(loginUserThunk.fulfilled, (state, { payload }) => {
+        state.isLoadong = false;
+        state.error = null;
+        state.user = payload.user;
+        state.isAuthorized = true;
+        setCookie('accessToken', payload.accessToken);
+        localStorage.setItem('refreshToken', payload.refreshToken);
+      })
+      .addCase(registerUserThunk.pending, (state) => {
+        state.isLoadong = true;
+        state.error = null;
+      })
+      .addCase(registerUserThunk.rejected, (state, { error }) => {
+        state.isLoadong = false;
+        state.error = error.message as string;
+      })
+      .addCase(registerUserThunk.fulfilled, (state, { payload }) => {
+        state.isLoadong = false;
+        state.error = null;
+        state.user = payload.user;
+        state.isAuthorized = true;
+        setCookie('accessToken', payload.accessToken);
+        localStorage.setItem('refreshToken', payload.refreshToken);
+      })
+      .addCase(logoutUserThunk.pending, (state) => {
+        state.isLoadong = true;
+        state.error = null;
+      })
+      .addCase(logoutUserThunk.rejected, (state, { error }) => {
+        state.isLoadong = false;
+        state.error = error.message as string;
+      })
+      .addCase(logoutUserThunk.fulfilled, (state, { payload }) => {
+        state.isLoadong = false;
+        state.error = null;
+        state.user = null;
+        state.isAuthorized = false;
+        deleteCookie('accessToken');
+        localStorage.removeItem('refreshToken');
+      })
+      .addCase(updateUserThunk.pending, (state) => {
+        state.isLoadong = true;
+        state.error = null;
+      })
+      .addCase(updateUserThunk.rejected, (state, { error }) => {
+        state.isLoadong = false;
+        state.error = error.message as string;
+      })
+      .addCase(updateUserThunk.fulfilled, (state, { payload }) => {
+        state.isLoadong = false;
+        state.error = null;
+        state.user = payload.user;
+        state.isAuthorized = true;
+      })
+      .addCase(forgotPasswordThunk.pending, (state) => {
+        state.isLoadong = true;
+        state.error = null;
+      })
+      .addCase(forgotPasswordThunk.rejected, (state, { error }) => {
+        state.isLoadong = false;
+        state.error = error.message as string;
+      })
+      .addCase(forgotPasswordThunk.fulfilled, (state) => {
+        state.isLoadong = false;
+        state.error = null;
+      })
+      .addCase(resetPasswordThunk.pending, (state) => {
+        state.isLoadong = true;
+        state.error = null;
+      })
+      .addCase(resetPasswordThunk.rejected, (state, { error }) => {
+        state.isLoadong = false;
+        state.error = error.message as string;
+      })
+      .addCase(resetPasswordThunk.fulfilled, (state) => {
+        state.isLoadong = false;
+        state.error = null;
+      })
+      .addCase(getUserThunk.pending, (state) => {
+        state.isLoadong = true;
+        state.error = null;
+      })
+      .addCase(getUserThunk.rejected, (state, { error }) => {
+        state.isLoadong = false;
+        state.error = error.message as string;
+      })
+      .addCase(getUserThunk.fulfilled, (state, { payload }) => {
+        state.isLoadong = false;
+        state.error = null;
+        state.isAuthorized = true;
+        state.user = payload.user;
+      });
+  }
 });
 
-export const { setError, updateUser } = userSlice.actions;
+export { initialState as userInitialState };
+export const { clearUserError } = userSlice.actions;
+export const {
+  getUserStateSelector,
+  getUserSelector,
+  isAuthorizedSelector,
+  getUserErrorSelector
+} = userSlice.selectors;
+
 export default userSlice.reducer;
